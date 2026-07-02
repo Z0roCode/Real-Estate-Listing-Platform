@@ -1,0 +1,198 @@
+// Prisma schema for the Z0roCode Estates platform.
+// PostgreSQL for production (Vercel Postgres, Neon, or any hosted Postgres).
+// Arrays are stored as JSON strings for portability across SQLite and Postgres.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Agent {
+  id          String   @id @default(cuid())
+  name        String
+  title       String
+  specialty   String
+  bio         String
+  email       String
+  phone       String
+  photo       String
+  city        String
+  // JSON: string[] of neighborhoods or property types they cover
+  focusAreas  String   @default("[]")
+  soldCount   Int      @default(0)
+  rating      Float    @default(0)
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+
+  properties  Property[]
+
+  @@index([city])
+}
+
+model Property {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+
+  price       Int
+  bedrooms    Int
+  bathrooms   Float
+  sqft        Int
+  lotSize     Float?
+
+  address     String
+  city        String
+  state       String
+  zip         String
+  latitude    Float
+  longitude   Float
+
+  type        String   // House | Apartment | Condo | Townhouse | Loft
+  status      String   // For Sale | Pending | Sold
+  yearBuilt   Int?
+  energyRating String? // A..G, optional
+
+  // JSON string arrays (SQLite)
+  images      String   // string[]
+  features    String   // string[]
+  amenities   String   @default("[]") // string[]
+  // JSON: { schools, hospitals, shopping, transit } of nearby places
+  nearby      String   @default("{}")
+  // JSON: [{ date, event, price? }] property history
+  history     String   @default("[]")
+
+  agentId     String?
+  agent       Agent?   @relation(fields: [agentId], references: [id], onDelete: SetNull)
+
+  featured    Boolean  @default(false)
+  approved    Boolean  @default(true) // seller-submitted start as false
+  views       Int      @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  inquiries   Inquiry[]
+  savedBy     SavedProperty[]
+
+  @@index([city])
+  @@index([type])
+  @@index([status])
+  @@index([price])
+  @@index([bedrooms])
+  @@index([featured])
+  @@index([approved])
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  phone       String?
+  role        String   @default("client") // client | agent | admin
+  // onboarding preferences (JSON)
+  intent      String?  // buying | selling
+  budget      Int?
+  preferredCity String?
+  timeline    String?
+  createdAt   DateTime @default(now())
+
+  saved       SavedProperty[]
+  inquiries   Inquiry[]
+  appointments Appointment[]
+  leads       Lead[]
+}
+
+model SavedProperty {
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  alertOn    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@index([userId])
+}
+
+model Inquiry {
+  id         String   @id @default(cuid())
+  propertyId String?
+  userId     String?
+  agentId    String?
+  name       String
+  email      String
+  phone      String?
+  message    String
+  // spam protection: source / honeypot flag
+  source     String   @default("contact") // contact | property | valuation | listing
+  createdAt  DateTime @default(now())
+
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([propertyId])
+  @@index([userId])
+}
+
+model Lead {
+  id         String   @id @default(cuid())
+  userId     String?
+  name       String
+  email      String
+  phone      String?
+  intent     String?  // buying | selling | newsletter
+  budget     Int?
+  city       String?
+  timeline   String?
+  source     String   @default("homepage") // homepage | signup | valuation | insights | contact
+  stage      String   @default("new") // new | contacted | consultation | client | won | lost
+  notes      String?
+  createdAt  DateTime @default(now())
+
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([stage])
+  @@index([source])
+}
+
+model Appointment {
+  id         String   @id @default(cuid())
+  userId     String?
+  propertyId String?
+  name       String
+  email      String
+  phone      String
+  date       String   // ISO date
+  time       String   // "10:00"
+  type       String   // video | phone | office
+  notes      String?
+  status     String   @default("confirmed") // confirmed | cancelled | completed
+  createdAt  DateTime @default(now())
+
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([date])
+  @@index([propertyId])
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  type       String   // email | sms | push | internal
+  recipient  String   // email or role
+  subject    String
+  body       String
+  refType    String?  // lead | inquiry | appointment | property
+  refId      String?
+  sent       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([recipient])
+  @@index([refType])
+}
