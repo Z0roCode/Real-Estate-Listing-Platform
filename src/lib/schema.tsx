@@ -2,6 +2,8 @@
  * Injects JSON-LD structured data into the page head for SEO.
  * Renders a <script type="application/ld+json"> tag.
  */
+import { config } from "@/lib/config"
+
 export function StructuredData({ data }: { data: Record<string, any> | Record<string, any>[] }) {
   const json = JSON.stringify(Array.isArray(data) ? data : [data])
   return (
@@ -19,7 +21,7 @@ export function agencySchema() {
     "@type": "RealEstateAgent",
     name: "Z0roCode Estates",
     description: "A modern real estate marketplace for buyers and sellers who value transparency and great photography.",
-    url: "https://z0rocode.com",
+    url: config.siteUrl,
     telephone: "(512) 555-0100",
     email: "hello@z0rocode.com",
     address: {
@@ -56,7 +58,7 @@ export function propertySchema(p: {
     "@type": "Residence",
     name: p.title,
     description: p.description,
-    url: `https://z0rocode.com/buy/${p.slug}`,
+    url: `${config.siteUrl}/buy/${p.slug}`,
     image: p.images,
     numberOfRooms: p.bedrooms + p.bathrooms,
     numberOfBedrooms: p.bedrooms,
@@ -120,6 +122,6 @@ export function articleSchema(a: { title: string; description: string; date: str
       "@type": "Organization",
       name: "Z0roCode Estates",
     },
-    mainEntityOfPage: `https://z0rocode.com/insights/${a.slug}`,
+    mainEntityOfPage: `${config.siteUrl}/insights/${a.slug}`,
   }
 }

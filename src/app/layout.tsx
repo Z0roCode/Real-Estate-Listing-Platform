@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://z0rocode.com"),
+  metadataBase: new URL("https://real-estate-listing-platform-tau.vercel.app"),
   title: {
     default: "Z0roCode Estates — Find a place you'll love to call home",
     template: "%s · Z0roCode Estates",

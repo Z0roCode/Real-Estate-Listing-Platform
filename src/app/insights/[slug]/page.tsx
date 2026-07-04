@@ -43,9 +43,9 @@ function Article({ slug }: { slug: string }) {
       <StructuredData data={[
         articleSchema({ title: article.title, description: article.excerpt, date: article.date, slug: article.slug }),
         breadcrumbSchema([
-          { name: "Home", url: "https://z0rocode.com" },
-          { name: "Insights", url: "https://z0rocode.com/insights" },
-          { name: article.title, url: `https://z0rocode.com/insights/${article.slug}` },
+          { name: "Home", url: "https://real-estate-listing-platform-tau.vercel.app" },
+          { name: "Insights", url: "https://real-estate-listing-platform-tau.vercel.app/insights" },
+          { name: article.title, url: `https://real-estate-listing-platform-tau.vercel.app/insights/${article.slug}` },
         ]),
       ]} />
       <SiteHeader />

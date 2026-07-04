@@ -16,7 +16,7 @@ export const config = {
   isDevelopment: process.env.NODE_ENV !== "production",
 
   /** Site URL for SEO/sitemap (no trailing slash). */
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://z0rocode.com",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://real-estate-listing-platform-tau.vercel.app",
 
   /** Optional Unsplash key (demo never reads this at runtime). */
   unsplashKey: () => process.env.UNSPLASH_ACCESS_KEY ?? "",

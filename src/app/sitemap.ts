@@ -8,7 +8,7 @@ import type { MetadataRoute } from "next"
  * database is unavailable (e.g. during a Vercel build before seeding).
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://z0rocode.com"
+  const baseUrl = "https://real-estate-listing-platform-tau.vercel.app"
 
   const staticRoutes = [
     { url: baseUrl, changeFrequency: "daily" as const, priority: 1.0 },

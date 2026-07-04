@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/agent-dashboard", "/api", "/dashboard", "/auth"],
       },
     ],
-    sitemap: "https://z0rocode.com/sitemap.xml",
+    sitemap: "https://real-estate-listing-platform-tau.vercel.app/sitemap.xml",
   }
 }

@@ -152,9 +152,9 @@ function Detail({ slug }: { slug: string }) {
           agentName: property.agent?.name,
         }),
         breadcrumbSchema([
-          { name: "Home", url: "https://z0rocode.com" },
-          { name: "Buy", url: "https://z0rocode.com/buy" },
-          { name: property.title, url: `https://z0rocode.com/buy/${property.slug}` },
+          { name: "Home", url: "https://real-estate-listing-platform-tau.vercel.app" },
+          { name: "Buy", url: "https://real-estate-listing-platform-tau.vercel.app/buy" },
+          { name: property.title, url: `https://real-estate-listing-platform-tau.vercel.app/buy/${property.slug}` },
         ]),
       ]} />
       <SiteHeader />
