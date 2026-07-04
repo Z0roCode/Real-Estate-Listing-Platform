@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { signSession } from "@/lib/auth"
 
 /**
  * POST /api/auth/demo
  * Instant sign-in for portfolio reviewers. Creates (or reuses) a demo user
  * so the dashboards are explorable with zero friction. The README is honest
  * that this exists for the demo only and would be removed in production.
+ *
+ * The session cookie is signed (userId.hmac) so even the demo path can't be
+ * used to impersonate other users by tampering with the cookie.
  */
 export async function POST() {
   const email = "demo@z0rocode.com"
@@ -34,8 +38,9 @@ export async function POST() {
   }
 
   const res = NextResponse.json({ ok: true, user: { id: user.id, name: user.name, email: user.email } })
-  res.cookies.set("zc_session", user.id, {
+  res.cookies.set("zc_session", signSession(user.id), {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 30,
     path: "/",

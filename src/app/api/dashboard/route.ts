@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { serializeProperty } from "@/lib/serialize"
+import { getUserIdFromRequest } from "@/lib/auth"
 
 /** GET /api/dashboard — client dashboard data for the signed-in user. */
 export async function GET(request: Request) {
-  const cookie = request.headers.get("cookie") || ""
-  const m = cookie.match(/zc_session=([^;]+)/)
-  const userId = m ? m[1] : null
+  const userId = getUserIdFromRequest(request)
   if (!userId) {
     return NextResponse.json({ user: null })
   }

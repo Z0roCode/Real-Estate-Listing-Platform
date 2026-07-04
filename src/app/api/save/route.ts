@@ -1,20 +1,16 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-
-/** Reads the lightweight session cookie → userId. */
-export function getSessionUserId(request: Request): string | null {
-  const cookie = request.headers.get("cookie") || ""
-  const m = cookie.match(/zc_session=([^;]+)/)
-  return m ? m[1] : null
-}
+import { getUserIdFromRequest } from "@/lib/auth"
 
 /**
  * POST /api/save
  * Toggle a saved property for the signed-in user. If anonymous, returns 401 so
  * the client can open the signup modal (which then re-applies the save).
+ *
+ * The session cookie is verified (signed HMAC) — a tampered cookie is rejected.
  */
 export async function POST(request: Request) {
-  const userId = getSessionUserId(request)
+  const userId = getUserIdFromRequest(request)
   if (!userId) {
     return NextResponse.json({ error: "auth_required" }, { status: 401 })
   }

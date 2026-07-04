@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { serializeProperty } from "@/lib/serialize"
+import { getUserIdFromRequest } from "@/lib/auth"
 
 /**
  * GET /api/agent-dashboard
  * Returns the logged-in agent's listings, assigned leads, and pipeline value.
  * For the demo, treats the session user as a generic agent and returns all
  * agent-scoped data so the dashboard feels alive.
+ *
+ * Session cookie is verified (signed HMAC) before use.
  */
 export async function GET(request: Request) {
-  const cookie = request.headers.get("cookie") || ""
-  const m = cookie.match(/zc_session=([^;]+)/)
-  const userId = m ? m[1] : null
+  const userId = getUserIdFromRequest(request)
 
   const agents = await db.agent.findMany({
     include: {

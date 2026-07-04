@@ -155,8 +155,11 @@ export async function POST() {
       counts: finalCounts,
     })
   } catch (e) {
+    // Log the real error server-side, return a generic message to the client
+    // so we don't leak Prisma connection details or table names.
+    console.error("[admin/setup] seed failed:", e)
     return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Setup failed" },
+      { error: "Setup failed. Check the server logs for details.", code: "SETUP_FAILED" },
       { status: 500 },
     )
   }
@@ -175,9 +178,10 @@ export async function GET() {
       counts: { agents, properties, leads },
     })
   } catch (e) {
+    console.error("[admin/setup] connection check failed:", e)
     return NextResponse.json({
       connected: false,
-      error: e instanceof Error ? e.message : "Cannot connect to database",
+      error: "Cannot connect to the database. Check your DATABASE_URL and try again.",
     })
   }
 }
